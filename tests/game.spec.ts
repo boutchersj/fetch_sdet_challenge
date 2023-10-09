@@ -1,4 +1,5 @@
-import { test, expect, chromium, Browser, BrowserContext, Page, Locator } from '@playwright/test';
+import { test, expect, chromium, Browser, BrowserContext, Page, Locator, TestInfo } from '@playwright/test';
+import { saveHTML, savePNG } from '../utils.ts'
 
 test.describe('SDET Challenge', async () => {
     let browser: Browser;
@@ -8,6 +9,9 @@ test.describe('SDET Challenge', async () => {
     let weighingPans: Locator[]
     let group1: number[] = [0,1,2]
     let group2: number[] = [3,4,5]
+    let firstResult: string = ''
+    let secondResult: string = ''
+    let fakeCoin: Locator;
 
     async function getNthResult(nthResult: number): Promise<string> {
         const result: Locator = page.locator(`ol li:nth-child(${nthResult})`)
@@ -20,6 +24,11 @@ test.describe('SDET Challenge', async () => {
         browser = await chromium.launch({ headless: false });
         context = await browser.newContext();
         page = await context.newPage();
+    })
+
+    test.afterEach(async ({page}, testInfo: TestInfo) => {
+        await saveHTML(page, testInfo.title)
+        await savePNG(page, testInfo.title)
     })
 
     test.afterAll(async () => {
@@ -50,7 +59,7 @@ test.describe('SDET Challenge', async () => {
 
         await page.getByTestId('weigh').click()
 
-        const firstResult: string = await getNthResult(1)
+        firstResult = await getNthResult(1)
 
         if (firstResult.includes('=')) {
             await expect(firstResult).toEqual('[0,1,2] = [3,4,5]')
@@ -75,9 +84,30 @@ test.describe('SDET Challenge', async () => {
 
     test('Step 2', async () => {
         // If fake gold detected in Step 1, compare 2 of the 3 possible fakes
+        if (group1.length == 1 && group2.length == 1) {
+            await page.getByTestId('left_0').fill(`${group1[0]}`)
+            await page.getByTestId('left_1').fill(``)
+            await page.getByTestId('left_2').fill(``)
+    
+            await page.getByTestId('right_0').fill(`${group2[0]}`)
+            await page.getByTestId('right_1').fill(``)
+            await page.getByTestId('right_2').fill(``)
+    
+            await page.getByTestId('weigh').click()
+    
+            secondResult = await getNthResult(2)
+            console.log(secondResult)
+    
+            if (secondResult.includes('=')) {
+                fakeCoin = await page.getByTestId(`coin_${group2[0] + 1}`)
+                await fakeCoin.click()
+            }
+        }
 
         // If no fake gold detected in Step 1, compare 0-2 to 6-8
+        else {
 
+        }
     })
 
     test('Step 3', async () => {
