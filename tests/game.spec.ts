@@ -20,8 +20,8 @@ test.describe('SDET Challenge', async () => {
 
     test.beforeAll(async () => {
         // For Debugging Only
-        browser = await chromium.launch({ headless: false });
-        // browser = await chromium.launch();
+        // browser = await chromium.launch({ headless: false });
+        browser = await chromium.launch();
         context = await browser.newContext();
         page = await context.newPage();
     })
