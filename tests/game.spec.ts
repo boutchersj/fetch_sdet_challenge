@@ -8,8 +8,6 @@ test.describe('SDET Challenge', async () => {
 
     let weighingPans: Locator[]
     let goldCoins: number[] = [0,1,2,3,4,5,6,7,8]
-    let firstResult: string = ''
-    let secondResult: string = ''
     let fakeCoin: Locator;
 
     test.beforeAll(async () => {
@@ -51,27 +49,24 @@ test.describe('SDET Challenge', async () => {
 
         await page.getByTestId('weigh').click()
 
-        firstResult = await getNthResult(page, 1)
+        const firstResult = await getNthResult(page, 1)
 
         if (firstResult.includes('=')) {
             expect(firstResult).toEqual('[0,1,2] = [3,4,5]')
 
             goldCoins = goldCoins.slice(6)
-            console.log(goldCoins)
         }
 
         else if (firstResult.includes('<')) {
             expect(firstResult).toEqual('[0,1,2] < [3,4,5]')
 
             goldCoins = goldCoins.slice(0,3)
-            console.log(goldCoins)
         }
 
         else if (firstResult.includes('>')) {
             expect(firstResult).toEqual('[0,1,2] > [3,4,5]')
 
             goldCoins = goldCoins.slice(3,6)
-            console.log(goldCoins)
         }
     })
 
@@ -83,7 +78,7 @@ test.describe('SDET Challenge', async () => {
 
         await page.getByTestId('weigh').click()
 
-        secondResult = await getNthResult(page, 2)
+        const secondResult = await getNthResult(page, 2)
 
         if (secondResult.includes('=')) {
             fakeCoin = page.getByTestId(`coin_${goldCoins[2]}`)
