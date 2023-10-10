@@ -11,7 +11,9 @@ test.describe('SDET Challenge', async () => {
     let fakeCoin: Locator;
 
     test.beforeAll(async () => {
-        browser = await chromium.launch({ headless: false });
+        // For Debugging Only
+        // browser = await chromium.launch({ headless: false });
+        browser = await chromium.launch();
         context = await browser.newContext();
         page = await context.newPage();
     })
